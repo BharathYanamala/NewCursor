@@ -21,12 +21,13 @@ async function generateQuiz(userId, complexityDistribution = { easy: 4, moderate
     const excludedQuestionIds = correctHistory.map(h => h.questionId);
 
     // Build query to get available questions
+    // Conditionally construct where clause to avoid passing undefined to notIn
+    const whereClause = excludedQuestionIds.length > 0
+      ? { id: { notIn: excludedQuestionIds } }
+      : {};
+
     const availableQuestions = await prisma.question.findMany({
-      where: {
-        id: {
-          notIn: excludedQuestionIds.length > 0 ? excludedQuestionIds : undefined
-        }
-      },
+      where: whereClause,
       include: {
         options: {
           orderBy: { optionLetter: 'asc' }
@@ -43,10 +44,24 @@ async function generateQuiz(userId, complexityDistribution = { easy: 4, moderate
 
     // Select questions based on distribution
     const selectedQuestions = [];
-    
+
+    /**
+     * Fisher-Yates shuffle algorithm for unbiased randomization
+     * @param {Array} array - Array to shuffle
+     * @returns {Array} - Shuffled array
+     */
+    const shuffle = (array) => {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    };
+
     // Helper function to randomly select from array
     const randomSelect = (array, count) => {
-      const shuffled = [...array].sort(() => 0.5 - Math.random());
+      const shuffled = shuffle(array);
       return shuffled.slice(0, Math.min(count, shuffled.length));
     };
 
@@ -59,18 +74,15 @@ async function generateQuiz(userId, complexityDistribution = { easy: 4, moderate
     if (selectedQuestions.length < 10) {
       const remaining = 10 - selectedQuestions.length;
       const selectedIds = selectedQuestions.map(q => q.id);
-      const additionalQuestions = availableQuestions
-        .filter(q => !selectedIds.includes(q.id))
-        .sort(() => 0.5 - Math.random())
-        .slice(0, remaining);
-      
+      const additionalQuestions = shuffle(
+        availableQuestions.filter(q => !selectedIds.includes(q.id))
+      ).slice(0, remaining);
+
       selectedQuestions.push(...additionalQuestions);
     }
 
-    // Shuffle final selection
-    const finalQuestions = selectedQuestions
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 10);
+    // Shuffle final selection using Fisher-Yates
+    const finalQuestions = shuffle(selectedQuestions).slice(0, 10);
 
     return finalQuestions;
   } catch (error) {

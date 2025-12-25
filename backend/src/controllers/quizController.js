@@ -10,8 +10,8 @@ async function startQuiz(req, res) {
     const questions = await generateQuiz(userId);
 
     if (questions.length < 10) {
-      return res.status(400).json({ 
-        error: 'Not enough questions available. Please contact admin.' 
+      return res.status(400).json({
+        error: 'Not enough questions available. Please contact admin.'
       });
     }
 
@@ -21,6 +21,17 @@ async function startQuiz(req, res) {
         userId: userId,
         totalQuestions: questions.length
       }
+    });
+
+    // Create placeholder quiz answers to track which questions are in this quiz
+    // This prevents submission of arbitrary question IDs
+    await prisma.quizAnswer.createMany({
+      data: questions.map(q => ({
+        quizAttemptId: quizAttempt.id,
+        questionId: q.id,
+        userAnswer: '', // Placeholder, will be updated on submission
+        isCorrect: false
+      }))
     });
 
     // Return questions without correct answers
@@ -67,40 +78,75 @@ async function submitQuiz(req, res) {
       return res.status(400).json({ error: 'Quiz already submitted' });
     }
 
+    // Validate that all submitted question IDs belong to this quiz attempt
+    // Get the original question IDs for this quiz attempt
+    const originalQuizAnswers = await prisma.quizAnswer.findMany({
+      where: { quizAttemptId: quizAttemptId },
+      select: { questionId: true }
+    });
+
+    const originalQuestionIds = new Set(originalQuizAnswers.map(qa => qa.questionId));
+    const submittedQuestionIds = answers.map(a => a.questionId);
+
+    // Validate all submitted questions were part of the original quiz
+    const invalidQuestionIds = submittedQuestionIds.filter(id => !originalQuestionIds.has(id));
+    if (invalidQuestionIds.length > 0) {
+      return res.status(400).json({
+        error: 'Invalid question IDs submitted. All questions must be from the original quiz attempt.',
+        invalidQuestionIds: invalidQuestionIds
+      });
+    }
+
+    // Validate that we have answers for all questions
+    if (submittedQuestionIds.length !== originalQuestionIds.size) {
+      return res.status(400).json({
+        error: `Expected ${originalQuestionIds.size} answers, but received ${submittedQuestionIds.length}`
+      });
+    }
+
     // Get all questions with correct answers
-    const questionIds = answers.map(a => a.questionId);
     const questions = await prisma.question.findMany({
-      where: { id: { in: questionIds } },
+      where: { id: { in: submittedQuestionIds } },
       include: { options: true }
     });
+
+    // Create a map for quick lookup
+    const questionMap = new Map(questions.map(q => [q.id, q]));
 
     let score = 0;
     const results = [];
 
     // Process each answer
     for (const answer of answers) {
-      const question = questions.find(q => q.id === answer.questionId);
-      if (!question) continue;
+      const question = questionMap.get(answer.questionId);
+      if (!question) {
+        // This should not happen after validation, but handle gracefully
+        return res.status(400).json({
+          error: `Question ID ${answer.questionId} not found in database`
+        });
+      }
 
       let isCorrect = false;
-      
+
       if (question.questionType === 'objective') {
         // For objective, compare with correct answer
-        isCorrect = answer.userAnswer.trim().toUpperCase() === 
-                   question.correctAnswer.trim().toUpperCase();
+        isCorrect = answer.userAnswer.trim().toUpperCase() ===
+          question.correctAnswer.trim().toUpperCase();
       } else {
         // For fill_blank, case-insensitive comparison
-        isCorrect = answer.userAnswer.trim().toLowerCase() === 
-                   question.correctAnswer.trim().toLowerCase();
+        isCorrect = answer.userAnswer.trim().toLowerCase() ===
+          question.correctAnswer.trim().toLowerCase();
       }
 
       if (isCorrect) score++;
 
-      // Save answer
-      await prisma.quizAnswer.create({
-        data: {
+      // Update the existing quiz answer record (created when quiz started)
+      await prisma.quizAnswer.updateMany({
+        where: {
           quizAttemptId: quizAttemptId,
-          questionId: answer.questionId,
+          questionId: answer.questionId
+        },
+        data: {
           userAnswer: answer.userAnswer,
           isCorrect: isCorrect
         }
