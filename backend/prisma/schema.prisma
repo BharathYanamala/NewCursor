@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  username      String    @unique
+  email         String    @unique
+  passwordHash  String    @map("password_hash")
+  role          String    @default("participant")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  
+  quizAttempts  QuizAttempt[]
+  questionHistory UserQuestionHistory[]
+  
+  @@map("users")
+}
+
+model Question {
+  id              Int       @id @default(autoincrement())
+  questionText    String    @map("question_text")
+  questionType    String    @map("question_type")
+  complexityLevel String    @map("complexity_level")
+  correctAnswer   String    @map("correct_answer")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  
+  options         Option[]
+  quizAnswers     QuizAnswer[]
+  questionHistory UserQuestionHistory[]
+  
+  @@map("questions")
+}
+
+model Option {
+  id          Int      @id @default(autoincrement())
+  questionId  Int      @map("question_id")
+  optionText  String   @map("option_text")
+  optionLetter String  @map("option_letter")
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  
+  @@map("options")
+}
+
+model QuizAttempt {
+  id             Int          @id @default(autoincrement())
+  userId         Int          @map("user_id")
+  startedAt      DateTime     @default(now()) @map("started_at")
+  submittedAt    DateTime?    @map("submitted_at")
+  score          Int          @default(0)
+  totalQuestions Int          @default(10) @map("total_questions")
+  
+  user           User         @relation(fields: [userId], references: [id])
+  answers        QuizAnswer[]
+  
+  @@map("quiz_attempts")
+}
+
+model QuizAnswer {
+  id            Int         @id @default(autoincrement())
+  quizAttemptId Int         @map("quiz_attempt_id")
+  questionId    Int         @map("question_id")
+  userAnswer    String      @map("user_answer")
+  isCorrect     Boolean     @default(false) @map("is_correct")
+  
+  quizAttempt   QuizAttempt @relation(fields: [quizAttemptId], references: [id])
+  question      Question    @relation(fields: [questionId], references: [id])
+  
+  @@map("quiz_answers")
+}
+
+model UserQuestionHistory {
+  id               Int       @id @default(autoincrement())
+  userId           Int       @map("user_id")
+  questionId       Int       @map("question_id")
+  isCorrect        Boolean   @map("is_correct")
+  lastAttemptedAt  DateTime  @default(now()) @map("last_attempted_at")
+  
+  user             User      @relation(fields: [userId], references: [id])
+  question         Question  @relation(fields: [questionId], references: [id])
+  
+  @@unique([userId, questionId])
+  @@map("user_question_history")
+}
+
