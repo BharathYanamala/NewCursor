@@ -67,7 +67,7 @@ model QuizAnswer {
   userAnswer    String      @map("user_answer")
   isCorrect     Boolean     @default(false) @map("is_correct")
   
-  quizAttempt   QuizAttempt @relation(fields: [quizAttemptId], references: [id])
+  quizAttempt   QuizAttempt @relation(fields: [quizAttemptId], references: [id], onDelete: Cascade)
   question      Question    @relation(fields: [questionId], references: [id])
   
   @@map("quiz_answers")
