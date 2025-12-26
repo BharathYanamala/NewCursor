@@ -1,6 +1,6 @@
 .admin-dashboard {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0a1929 0%, #001f3f 50%, #003d82 100%);
   padding: 20px;
 }
 
@@ -76,7 +76,7 @@
 }
 
 .download-link {
-  color: #667eea;
+  color: #003d82;
   text-decoration: none;
   font-weight: 500;
 }
@@ -104,7 +104,7 @@
 
 .file-label {
   padding: 12px 24px;
-  background: #667eea;
+  background: #003d82;
   color: white;
   border-radius: 6px;
   cursor: pointer;
@@ -113,7 +113,7 @@
 }
 
 .file-label:hover {
-  background: #5568d3;
+  background: #004a9f;
 }
 
 .file-name {
@@ -123,7 +123,7 @@
 
 .upload-btn {
   padding: 15px 30px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #003d82 0%, #001f3f 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -136,7 +136,8 @@
 
 .upload-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 5px 15px rgba(0, 61, 130, 0.5);
+  background: linear-gradient(135deg, #004a9f 0%, #003d82 100%);
 }
 
 .upload-btn:disabled {

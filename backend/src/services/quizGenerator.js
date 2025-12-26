@@ -1,4 +1,4 @@
-const prisma = require('../config/database');
+import prisma from '../config/database.js';
 
 /**
  * Dynamic Quiz Generation Algorithm
@@ -91,5 +91,5 @@ async function generateQuiz(userId, complexityDistribution = { easy: 4, moderate
   }
 }
 
-module.exports = { generateQuiz };
+export { generateQuiz };
 

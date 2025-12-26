@@ -1,6 +1,7 @@
 {
   "name": "quiz-backend",
   "version": "1.0.0",
+  "type": "module",
   "description": "Quiz Application Backend",
   "main": "src/server.js",
   "scripts": {
@@ -9,22 +10,29 @@
     "prisma:generate": "npx prisma generate",
     "prisma:migrate": "npx prisma migrate dev",
     "prisma:studio": "npx prisma studio",
-    "prisma:seed": "node prisma/seed.js"
+    "prisma:seed": "node prisma/seed.js",
+    "delete:questions": "node scripts/deleteQuestions.js",
+    "count:questions": "node scripts/countQuestions.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
+    "@prisma/adapter-better-sqlite3": "^7.2.0",
+    "@prisma/client": "^7.2.0",
     "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^12.5.0",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.0.0",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
-    "csv-parser": "^3.0.0",
-    "xlsx": "^0.18.5",
-    "@prisma/client": "^5.7.1",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express-validator": "^7.0.1"
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "dotenv": "^17.2.3",
     "nodemon": "^3.0.2",
-    "prisma": "^5.7.1"
+    "prisma": "^7.2.0"
   }
 }

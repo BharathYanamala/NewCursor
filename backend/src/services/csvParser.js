@@ -1,12 +1,12 @@
-const csv = require('csv-parser');
-const xlsx = require('xlsx');
-const fs = require('fs');
-const prisma = require('../config/database');
+import csv from 'csv-parser';
+import xlsx from 'xlsx';
+import fs from 'fs';
+import prisma from '../config/database.js';
 
 /**
  * Parse CSV/XLSX file and validate question data
  * Expected format:
- * Question ID, Question Text, Question Type, Options, Correct Answer, Complexity Level
+ * Question Text, Question Type, Options, Correct Answer, Complexity Level, Subject
  */
 async function parseAndValidateQuestions(filePath, fileType) {
   const questions = [];
@@ -74,6 +74,7 @@ async function parseAndValidateQuestions(filePath, fileType) {
           questionType: questionType === 'fill in the blanks' ? 'fill_blank' : questionType,
           complexityLevel: complexity,
           correctAnswer: row['Correct Answer'].trim(),
+          subject: row['Subject'] ? row['Subject'].trim() : null,
           options: options
         });
       } catch (error) {
@@ -131,6 +132,7 @@ async function bulkInsertQuestions(questions) {
         questionType: q.questionType,
         complexityLevel: q.complexityLevel,
         correctAnswer: q.correctAnswer,
+        subject: q.subject || null,
         options: q.questionType === 'objective' ? {
           create: q.options.map(opt => ({
             optionLetter: opt.letter,
@@ -147,5 +149,5 @@ async function bulkInsertQuestions(questions) {
   return inserted;
 }
 
-module.exports = { parseAndValidateQuestions, bulkInsertQuestions };
+export { parseAndValidateQuestions, bulkInsertQuestions };
 

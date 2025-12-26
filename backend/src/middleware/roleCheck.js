@@ -12,5 +12,5 @@ const checkRole = (...allowedRoles) => {
   };
 };
 
-module.exports = { checkRole };
+export { checkRole };
 

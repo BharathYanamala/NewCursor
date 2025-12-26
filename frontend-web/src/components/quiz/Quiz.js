@@ -60,6 +60,40 @@ function Quiz() {
     }
   };
 
+  const handleQuit = async () => {
+    const answeredCount = Object.keys(answers).filter(key => answers[key] && answers[key].trim() !== '').length;
+    
+    if (answeredCount === 0) {
+      if (!window.confirm('You haven\'t answered any questions. Are you sure you want to quit?')) {
+        return;
+      }
+    } else {
+      if (!window.confirm(`You have answered ${answeredCount} out of ${questions.length} questions. Are you sure you want to quit? Your progress will be saved.`)) {
+        return;
+      }
+    }
+
+    try {
+      // Submit only answered questions
+      const answersArray = questions
+        .filter(q => answers[q.id] && answers[q.id].trim() !== '')
+        .map(q => ({
+          questionId: q.id,
+          userAnswer: answers[q.id]
+        }));
+
+      const response = await api.post('/quiz/quit', {
+        quizAttemptId,
+        answers: answersArray
+      });
+
+      navigate('/results', { state: { results: response.data } });
+    } catch (error) {
+      console.error('Failed to quit quiz:', error);
+      alert('Failed to quit quiz. Please try again.');
+    }
+  };
+
   if (loading) {
     return <div className="quiz-loading">Loading quiz...</div>;
   }
@@ -70,7 +104,15 @@ function Quiz() {
   return (
     <div className="quiz-container">
       <div className="quiz-header">
-        <h2>Quiz</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+          <h2 style={{ margin: 0 }}>Quiz</h2>
+          <button
+            onClick={handleQuit}
+            className="quit-btn"
+          >
+            Quit Quiz
+          </button>
+        </div>
         <div className="progress-bar">
           <div className="progress-fill" style={{ width: `${progress}%` }}></div>
         </div>

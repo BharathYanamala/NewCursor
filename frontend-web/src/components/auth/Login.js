@@ -16,10 +16,14 @@ function Login() {
     setError('');
     setLoading(true);
 
-    const result = await login(email, password);
+    // Normalize email (trim and lowercase)
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedPassword = password.trim();
+
+    const result = await login(normalizedEmail, normalizedPassword);
 
     if (result.success) {
-      const user = JSON.parse(localStorage.getItem('user'));
+      const user = JSON.parse(sessionStorage.getItem('user'));
       if (user.role === 'admin') {
         navigate('/admin');
       } else {
@@ -63,6 +67,9 @@ function Login() {
           </button>
         </form>
         <p className="auth-link">
+          <Link to="/forgot-password">Forgot your password?</Link>
+        </p>
+        <p className="auth-link" style={{ marginTop: '10px' }}>
           Don't have an account? <Link to="/register">Register here</Link>
         </p>
       </div>

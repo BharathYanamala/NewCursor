@@ -1,10 +1,11 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { authenticateToken } = require('../middleware/auth');
-const { startQuiz, submitQuiz } = require('../controllers/quizController');
+import { authenticateToken } from '../middleware/auth.js';
+import { startQuiz, submitQuiz, quitQuiz } from '../controllers/quizController.js';
 
 router.post('/start', authenticateToken, startQuiz);
 router.post('/submit', authenticateToken, submitQuiz);
+router.post('/quit', authenticateToken, quitQuiz);
 
-module.exports = router;
+export default router;
 

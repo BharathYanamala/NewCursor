@@ -1,6 +1,6 @@
 .quiz-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0a1929 0%, #001f3f 50%, #003d82 100%);
   padding: 20px;
 }
 
@@ -38,7 +38,7 @@
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(90deg, #003d82 0%, #001f3f 100%);
   transition: width 0.3s;
 }
 
@@ -59,7 +59,7 @@
 
 .complexity-badge {
   padding: 6px 12px;
-  background: #667eea;
+  background: #003d82;
   color: white;
   border-radius: 20px;
   font-size: 12px;
@@ -100,8 +100,8 @@
 }
 
 .option-label:hover {
-  border-color: #667eea;
-  background: #f8f9ff;
+  border-color: #003d82;
+  background: #f0f4f8;
 }
 
 .option-label input[type="radio"] {
@@ -112,7 +112,7 @@
 }
 
 .option-label input[type="radio"]:checked + .option-letter {
-  color: #667eea;
+  color: #003d82;
   font-weight: 600;
 }
 
@@ -142,7 +142,7 @@
 
 .fill-blank-input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #003d82;
 }
 
 .quiz-navigation {
@@ -159,7 +159,7 @@
 
 .nav-btn {
   padding: 12px 24px;
-  background: #667eea;
+  background: #003d82;
   color: white;
   border: none;
   border-radius: 6px;
@@ -170,7 +170,7 @@
 }
 
 .nav-btn:hover:not(:disabled) {
-  background: #5568d3;
+  background: #004a9f;
 }
 
 .nav-btn:disabled {
@@ -197,13 +197,13 @@
 }
 
 .indicator:hover {
-  border-color: #667eea;
+  border-color: #003d82;
 }
 
 .indicator.active {
-  background: #667eea;
+  background: #003d82;
   color: white;
-  border-color: #667eea;
+  border-color: #003d82;
 }
 
 .indicator.answered {
@@ -225,6 +225,27 @@
 
 .submit-btn:hover {
   background: #218838;
+}
+
+.quit-btn {
+  padding: 8px 16px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.quit-btn:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+}
+
+.quit-btn:active {
+  transform: translateY(0);
 }
 
 @media (max-width: 768px) {

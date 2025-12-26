@@ -1,5 +1,5 @@
-const prisma = require('../config/database');
-const { generateQuiz } = require('../services/quizGenerator');
+import prisma from '../config/database.js';
+import { generateQuiz } from '../services/quizGenerator.js';
 
 // Start a new quiz
 async function startQuiz(req, res) {
@@ -207,5 +207,152 @@ async function submitQuiz(req, res) {
   }
 }
 
-module.exports = { startQuiz, submitQuiz };
+// Quit quiz early - submit partial answers
+async function quitQuiz(req, res) {
+  try {
+    const { quizAttemptId, answers } = req.body;
+    const userId = req.user.id;
+
+    // Validate quiz attempt belongs to user
+    const quizAttempt = await prisma.quizAttempt.findFirst({
+      where: {
+        id: quizAttemptId,
+        userId: userId
+      }
+    });
+
+    if (!quizAttempt) {
+      return res.status(404).json({ error: 'Quiz attempt not found' });
+    }
+
+    if (quizAttempt.submittedAt) {
+      return res.status(400).json({ error: 'Quiz already submitted' });
+    }
+
+    // Get the original question IDs for this quiz attempt
+    const originalQuizAnswers = await prisma.quizAnswer.findMany({
+      where: { quizAttemptId: quizAttemptId },
+      select: { questionId: true }
+    });
+
+    const originalQuestionIds = new Set(originalQuizAnswers.map(qa => qa.questionId));
+    const submittedQuestionIds = answers.map(a => a.questionId);
+
+    // Validate all submitted questions were part of the original quiz
+    const invalidQuestionIds = submittedQuestionIds.filter(id => !originalQuestionIds.has(id));
+    if (invalidQuestionIds.length > 0) {
+      return res.status(400).json({
+        error: 'Invalid question IDs submitted.'
+      });
+    }
+
+    // Get all questions with correct answers
+    const questions = await prisma.question.findMany({
+      where: { id: { in: submittedQuestionIds } },
+      include: { options: true }
+    });
+
+    // Create a map for quick lookup
+    const questionMap = new Map(questions.map(q => [q.id, q]));
+
+    let score = 0;
+    const results = [];
+
+    // Process each answer (only answered questions)
+    for (const answer of answers) {
+      // Skip empty answers
+      if (!answer.userAnswer || answer.userAnswer.trim() === '') {
+        continue;
+      }
+
+      const question = questionMap.get(answer.questionId);
+      if (!question) {
+        continue;
+      }
+
+      let isCorrect = false;
+
+      if (question.questionType === 'objective') {
+        isCorrect = answer.userAnswer.trim().toUpperCase() ===
+          question.correctAnswer.trim().toUpperCase();
+      } else {
+        isCorrect = answer.userAnswer.trim().toLowerCase() ===
+          question.correctAnswer.trim().toLowerCase();
+      }
+
+      if (isCorrect) score++;
+
+      // Update the existing quiz answer record
+      await prisma.quizAnswer.updateMany({
+        where: {
+          quizAttemptId: quizAttemptId,
+          questionId: answer.questionId
+        },
+        data: {
+          userAnswer: answer.userAnswer,
+          isCorrect: isCorrect
+        }
+      });
+
+      // Update user question history
+      await prisma.userQuestionHistory.upsert({
+        where: {
+          userId_questionId: {
+            userId: userId,
+            questionId: answer.questionId
+          }
+        },
+        update: {
+          isCorrect: isCorrect,
+          lastAttemptedAt: new Date()
+        },
+        create: {
+          userId: userId,
+          questionId: answer.questionId,
+          isCorrect: isCorrect
+        }
+      });
+
+      // Prepare result for response
+      results.push({
+        questionId: question.id,
+        questionText: question.questionText,
+        questionType: question.questionType,
+        userAnswer: answer.userAnswer,
+        correctAnswer: question.correctAnswer,
+        isCorrect: isCorrect,
+        options: question.options?.map(opt => ({
+          letter: opt.optionLetter,
+          text: opt.optionText
+        })) || []
+      });
+    }
+
+    // Update quiz attempt - mark as submitted with partial completion
+    // Update totalQuestions to reflect only answered questions
+    await prisma.quizAttempt.update({
+      where: { id: quizAttemptId },
+      data: {
+        submittedAt: new Date(),
+        score: score,
+        totalQuestions: results.length // Update to show only attempted questions
+      }
+    });
+
+    // Only return answered questions - don't include unattempted questions
+    res.json({
+      quizAttemptId: quizAttemptId,
+      score: score,
+      totalQuestions: results.length, // Only count attempted questions
+      answeredQuestions: results.length,
+      results: results, // Only include answered questions
+      isPartial: true
+    });
+  } catch (error) {
+    console.error('Error quitting quiz:', error);
+    res.status(500).json({ error: 'Failed to quit quiz' });
+  }
+}
+
+export { startQuiz, submitQuiz, quitQuiz };
 

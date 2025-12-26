@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { authenticateToken } = require('../middleware/auth');
-const { checkRole } = require('../middleware/roleCheck');
-const { uploadQuestions } = require('../controllers/adminController');
+import { authenticateToken } from '../middleware/auth.js';
+import { checkRole } from '../middleware/roleCheck.js';
+import { uploadQuestions } from '../controllers/adminController.js';
 
 router.post('/upload-questions', 
   authenticateToken, 
@@ -10,5 +10,5 @@ router.post('/upload-questions',
   uploadQuestions
 );
 
-module.exports = router;
+export default router;
 

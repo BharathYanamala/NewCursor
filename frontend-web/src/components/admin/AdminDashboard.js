@@ -116,6 +116,7 @@ function AdminDashboard() {
             <li><strong>Options</strong> - For objective questions: "A: Option1, B: Option2, C: Option3, D: Option4"</li>
             <li><strong>Correct Answer</strong> - The correct answer (letter for objective, text for fill_blank)</li>
             <li><strong>Complexity Level</strong> - "easy", "moderate", or "complex"</li>
+            <li><strong>Subject</strong> - The subject/category of the question (optional)</li>
           </ul>
         </div>
       </div>

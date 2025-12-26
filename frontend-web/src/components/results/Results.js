@@ -12,15 +12,43 @@ function Results() {
     return null;
   }
 
-  const { score, totalQuestions, results: questionResults } = results;
-  const percentage = ((score / totalQuestions) * 100).toFixed(1);
+  const { 
+    score, 
+    totalQuestions, 
+    results: questionResults,
+    answeredQuestions,
+    isPartial 
+  } = results;
+  
+  // For partial quizzes, totalQuestions already reflects only attempted questions
+  const answeredCount = totalQuestions; // totalQuestions now represents only attempted questions
+  const percentage = answeredCount > 0 
+    ? ((score / answeredCount) * 100).toFixed(1)
+    : 0;
   const correctCount = questionResults.filter(r => r.isCorrect).length;
-  const incorrectCount = totalQuestions - correctCount;
+  const incorrectCount = questionResults.filter(r => !r.isCorrect).length;
 
   return (
     <div className="results-container">
       <div className="results-header">
-        <h2>Quiz Results</h2>
+        <div className="results-header-top">
+          <div className="results-header-title">
+            <h2>{isPartial ? 'Quiz Summary (Quit Early)' : 'Quiz Results'}</h2>
+            {isPartial && (
+              <p className="partial-message">
+                You quit the quiz early. Here's your progress for the {answeredCount} question{answeredCount !== 1 ? 's' : ''} you attempted.
+              </p>
+            )}
+          </div>
+          <div className="results-actions">
+            <button onClick={() => navigate('/dashboard')} className="btn-primary">
+              Back to Dashboard
+            </button>
+            <button onClick={() => navigate('/quiz')} className="btn-primary">
+              Take Another Quiz
+            </button>
+          </div>
+        </div>
         <div className="score-summary">
           <div className="score-circle">
             <div className="score-value">{score}/{totalQuestions}</div>
@@ -95,15 +123,6 @@ function Results() {
             )}
           </div>
         ))}
-      </div>
-
-      <div className="results-actions">
-        <button onClick={() => navigate('/dashboard')} className="btn-primary">
-          Back to Dashboard
-        </button>
-        <button onClick={() => navigate('/quiz')} className="btn-secondary">
-          Take Another Quiz
-        </button>
       </div>
     </div>
   );

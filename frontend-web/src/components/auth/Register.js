@@ -17,10 +17,22 @@ function Register() {
     setError('');
     setLoading(true);
 
-    const result = await register(username, email, password);
+    // Normalize inputs (trim whitespace, lowercase email)
+    const normalizedUsername = username.trim();
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedPassword = password.trim();
+
+    const result = await register(normalizedUsername, normalizedEmail, normalizedPassword);
 
     if (result.success) {
-      navigate('/dashboard');
+      // Registration successful - user is automatically logged in
+      // Navigate to appropriate dashboard based on role
+      const user = JSON.parse(sessionStorage.getItem('user'));
+      if (user?.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } else {
       setError(result.error);
     }

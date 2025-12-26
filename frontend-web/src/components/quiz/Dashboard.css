@@ -1,6 +1,6 @@
 .dashboard-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0a1929 0%, #001f3f 50%, #003d82 100%);
   padding: 20px;
 }
 
@@ -87,20 +87,21 @@
 
 .btn-start-quiz {
   padding: 18px 50px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #003d82 0%, #001f3f 100%);
   color: white;
   border: none;
   border-radius: 8px;
   font-size: 20px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 5px 20px rgba(0, 61, 130, 0.4);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .btn-start-quiz:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+  box-shadow: 0 8px 25px rgba(0, 61, 130, 0.6);
+  background: linear-gradient(135deg, #004a9f 0%, #003d82 100%);
 }
 
 @media (max-width: 768px) {

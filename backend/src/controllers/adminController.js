@@ -1,7 +1,7 @@
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-const { parseAndValidateQuestions, bulkInsertQuestions } = require('../services/csvParser');
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { parseAndValidateQuestions, bulkInsertQuestions } from '../services/csvParser.js';
 
 // Configure multer for file upload
 const storage = multer.diskStorage({
@@ -93,5 +93,5 @@ async function uploadQuestions(req, res) {
   });
 }
 
-module.exports = { uploadQuestions };
+export { uploadQuestions };
 

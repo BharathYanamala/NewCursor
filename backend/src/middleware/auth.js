@@ -1,5 +1,14 @@
-const jwt = require('jsonwebtoken');
-const prisma = require('../config/database');
+import jwt from 'jsonwebtoken';
+import prisma from '../config/database.js';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+
+// Ensure environment variables are loaded
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const envPath = resolve(__dirname, '../../.env');
+dotenv.config({ path: envPath });
 
 const authenticateToken = async (req, res, next) => {
   try {
@@ -10,7 +19,13 @@ const authenticateToken = async (req, res, next) => {
       return res.status(401).json({ error: 'Access token required' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      console.error('JWT_SECRET is not set in environment variables');
+      return res.status(500).json({ error: 'Server configuration error' });
+    }
+    
+    const decoded = jwt.verify(token, jwtSecret);
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
       select: { id: true, username: true, email: true, role: true }
@@ -27,5 +42,5 @@ const authenticateToken = async (req, res, next) => {
   }
 };
 
-module.exports = { authenticateToken };
+export { authenticateToken };
 

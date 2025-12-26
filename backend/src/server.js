@@ -1,12 +1,10 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
+import express from 'express';
+import cors from 'cors';
+import 'dotenv/config';
 
-dotenv.config();
-
-const authRoutes = require('./routes/auth');
-const adminRoutes = require('./routes/admin');
-const quizRoutes = require('./routes/quiz');
+import authRoutes from './routes/auth.js';
+import adminRoutes from './routes/admin.js';
+import quizRoutes from './routes/quiz.js';
 
 const app = express();
 
