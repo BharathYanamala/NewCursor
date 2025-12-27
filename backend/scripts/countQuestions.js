@@ -1,43 +1,9 @@
-import { PrismaClient } from '@prisma/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
-import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
-
-// Load environment variables
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const envPath = resolve(__dirname, '../../.env');
-dotenv.config({ path: envPath });
-
-// Get the original DATABASE_URL string
-const databaseUrlString = process.env.DATABASE_URL || 'file:./dev.db';
-
-// Resolve relative paths to absolute paths for the URL
-let resolvedUrl = databaseUrlString;
-if (databaseUrlString.startsWith('file:./') || databaseUrlString.startsWith('file:../')) {
-  const filePath = databaseUrlString.replace(/^file:/, '');
-  const absolutePath = resolve(__dirname, '../../', filePath);
-  resolvedUrl = `file:${absolutePath}`;
-}
-
-// Create adapter and Prisma client
-const adapter = new PrismaBetterSqlite3({ url: resolvedUrl });
-const prisma = new PrismaClient({ adapter });
+// Use the same database connection as the main application
+import prisma from '../src/config/database.js';
 
 async function countQuestions() {
   try {
-    // First, check if the questions table exists using raw SQL
-    const tables = await prisma.$queryRaw`
-      SELECT name FROM sqlite_master WHERE type='table' AND name='questions';
-    `;
-    
-    if (!tables || tables.length === 0) {
-      console.log('ℹ️  Questions table does not exist. Database appears to be empty or not initialized.');
-      console.log('💡 If you need to create tables, run: npm run prisma:migrate');
-      return;
-    }
-    
+    // Try to count questions directly - if table doesn't exist, it will throw P2021
     const questionCount = await prisma.question.count();
     console.log(`📊 Total questions in database: ${questionCount}`);
     

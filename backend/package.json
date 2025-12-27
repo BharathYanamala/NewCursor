@@ -12,6 +12,8 @@
     "prisma:studio": "npx prisma studio",
     "prisma:seed": "node prisma/seed.js",
     "delete:questions": "node scripts/deleteQuestions.js",
+    "delete:non-html": "node scripts/deleteNonHtmlQuestions.js",
+    "remove:prefix": "node scripts/removeQuestionPrefix.js",
     "count:questions": "node scripts/countQuestions.js"
   },
   "prisma": {
