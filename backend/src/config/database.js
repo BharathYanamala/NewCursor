@@ -1,4 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import pkg from '@prisma/client';
+const { PrismaClient } = pkg;
+//const prisma = new PrismaClient();
+//export default prisma;
+//import { PrismaClient } from '@prisma/client/index.js';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';

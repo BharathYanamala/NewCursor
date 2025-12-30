@@ -42,29 +42,23 @@ function Login() {
         <h2>Login</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="login-email">Email</label>
+            <label>Email</label>
             <input
-              id="login-email"
-              name="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="Enter your email"
-              autoComplete="email"
             />
           </div>
           <div className="form-group">
-            <label htmlFor="login-password">Password</label>
+            <label>Password</label>
             <input
-              id="login-password"
-              name="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="Enter your password"
-              autoComplete="current-password"
             />
           </div>
           {error && <div className="error-message">{error}</div>}
@@ -84,3 +78,4 @@ function Login() {
 }
 
 export default Login;
+

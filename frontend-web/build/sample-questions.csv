@@ -1,0 +1,21 @@
+Question Text,Question Type,Options,Correct Answer,Complexity Level,Subject
+"What is the capital of France?",objective,"A: Paris, B: London, C: Berlin, D: Madrid",A,Easy,Geography
+"JavaScript is a _____ language.",fill_blank,,programming,Easy,Programming
+"What does DOM stand for?",objective,"A: Document Object Model, B: Data Object Model, C: Dynamic Object Model, D: Document Oriented Model",A,Moderate,Web Development
+"React uses _____ to update the UI.",fill_blank,,Virtual DOM,Moderate,React
+"What is the time complexity of binary search?",objective,"A: O(n), B: O(log n), C: O(n²), D: O(1)",B,Complex,Algorithms
+"Which method is used to add an element to the end of an array in JavaScript?",objective,"A: push(), B: pop(), C: shift(), D: unshift()",A,Easy,Programming
+"_____ is used to manage state in React components.",fill_blank,,useState,Easy,React
+"What is the purpose of useEffect hook in React?",objective,"A: To handle side effects, B: To create components, C: To style components, D: To route pages",A,Moderate,React
+"What is the output of: console.log(typeof null)?",objective,"A: null, B: undefined, C: object, D: string",C,Moderate,Programming
+"The _____ algorithm is used for finding shortest paths in a graph.",fill_blank,,Dijkstra,Complex,Algorithms
+"What is closure in JavaScript?",objective,"A: A function that has access to outer scope variables, B: A way to close files, C: A CSS property, D: A database concept",A,Complex,Programming
+"_____ allows components to share data without prop drilling.",fill_blank,,Context API,Moderate,React
+"Which array method creates a new array with transformed elements?",objective,"A: forEach(), B: map(), C: filter(), D: reduce()",B,Easy,Programming
+"What is JSX?",objective,"A: JavaScript XML, B: Java Syntax Extension, C: JSON XML, D: JavaScript Extension",A,Moderate,React
+"The _____ pattern is used to create objects in JavaScript.",fill_blank,,Factory,Complex,Design Patterns
+"Which hook is used for performance optimization in React?",objective,"A: useMemo(), B: useState(), C: useEffect(), D: useContext()",A,Complex,React
+"What does API stand for?",objective,"A: Application Programming Interface, B: Advanced Programming Interface, C: Application Program Integration, D: Advanced Program Integration",A,Easy,Programming
+"_____ is a NoSQL database.",fill_blank,,MongoDB,Easy,Database
+"What is the purpose of Redux?",objective,"A: State management, B: Routing, C: Styling, D: Testing",A,Moderate,React
+"The _____ principle states that a class should have only one reason to change.",fill_blank,,Single Responsibility,Complex,Design Patterns
